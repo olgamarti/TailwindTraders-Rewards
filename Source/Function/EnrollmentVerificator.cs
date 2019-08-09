@@ -41,7 +41,7 @@ namespace Tailwind.Traders.Rewards.FuncApp
             {
                 Task<EnrollmentStatusEnum> approvalEvent = ctx.WaitForExternalEvent<EnrollmentStatusEnum>(Events.ApprovalEvent);
 
-                DateTime reminderDueTime = ctx.CurrentUtcDateTime.AddHours(7);
+                DateTime reminderDueTime = ctx.CurrentUtcDateTime.AddMinutes(3);
                 Task reminderTimeout = ctx.CreateTimer(reminderDueTime, timeoutCts.Token);
 
                 if (approvalEvent == await Task.WhenAny(approvalEvent, reminderTimeout))
@@ -64,11 +64,11 @@ namespace Tailwind.Traders.Rewards.FuncApp
                 {
                     if (data.Channel == ChannelType.Email)
                     {
-                        await ctx.CallActivityAsync(Activities.Sms.SendReminderEnrollmentNotification, data.MobileNumber);
+                        await ctx.CallActivityAsync(Activities.Email.SendReminderEnrollmentNotification, data.Email);
                     }
                     else
                     {
-                        await ctx.CallActivityAsync(Activities.Email.SendReminderEnrollmentNotification, data.Email);
+                        await ctx.CallActivityAsync(Activities.Sms.SendReminderEnrollmentNotification, data.MobileNumber);
                     }
                 }
 
